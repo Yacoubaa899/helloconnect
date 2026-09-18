@@ -1,5 +1,14 @@
+const express = require('express');
 const mysql = require('mysql2');
+const cors = require('cors');
 
+const app = express();
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Connexion MySQL Aiven via variables d'environnement
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 18408,
@@ -37,4 +46,13 @@ db.connect((err) => {
     });
 });
 
-module.exports = db;
+// Route de test pour vérifier que l'API fonctionne
+app.get('/', (req, res) => {
+    res.send('API HelloConnect opérationnelle !');
+});
+
+// IMPORTANT POUR RENDER : Écoute du port dynamique
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Serveur démarré et à l'écoute sur le port ${PORT}`);
+});
