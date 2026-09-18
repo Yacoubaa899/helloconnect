@@ -8,6 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Route de test principale pour Render
+app.get('/', (req, res) => {
+    res.send('API HelloConnect opérationnelle !');
+});
+
 // Connexion MySQL Aiven via variables d'environnement
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
@@ -27,7 +32,6 @@ db.connect((err) => {
     }
     console.log('✅ Connecté avec succès à la base MySQL Aiven !');
 
-    // Création automatique de la table si elle n'existe pas
     const createTableQuery = `
     CREATE TABLE IF NOT EXISTS utilisateurs (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,12 +50,7 @@ db.connect((err) => {
     });
 });
 
-// Route de test pour vérifier que l'API fonctionne
-app.get('/', (req, res) => {
-    res.send('API HelloConnect opérationnelle !');
-});
-
-// IMPORTANT POUR RENDER : Écoute du port dynamique
+// DÉMARRAGE IMMÉDIAT DU SERVEUR (Indépendant de la DB)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`🚀 Serveur démarré et à l'écoute sur le port ${PORT}`);
