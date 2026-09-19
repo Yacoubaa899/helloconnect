@@ -39,6 +39,45 @@ app.post('/register', (req, res) => {
     });
 });
 
+// Route pour la connexion
+app.post('/login', (req, res) => {
+    const { email, password, motdepasse } = req.body;
+    const userPassword = password || motdepasse;
+
+    // 1. On cherche si l'utilisateur existe avec cet e-mail
+    const sql = "SELECT * FROM utilisateurs WHERE email = ?";
+
+    db.query(sql, [email], (err, results) => {
+        if (err) {
+            console.error("Erreur SQL lors de la connexion :", err);
+            return res.status(500).json({ error: "Erreur serveur lors de la connexion" });
+        }
+
+        // Si aucun utilisateur n'est trouvé
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Utilisateur non trouvé" });
+        }
+
+        const user = results[0];
+
+        // 2. On vérifie le mot de passe (colonne 'mot_de_passe' ou 'password')
+        const storedPassword = user.mot_de_passe || user.password;
+
+        if (storedPassword !== userPassword) {
+            return res.status(401).json({ error: "Mot de passe incorrect" });
+        }
+
+        // 3. Connexion réussie !
+        res.status(200).json({
+            message: "Connexion réussie !",
+            user: {
+                id: user.id,
+                nom: user.nom,
+                email: user.email
+            }
+        });
+    });
+});
 // Connexion MySQL Aiven via variables d'environnement
 const db = mysql.createConnection({
     host: process.env.DB_HOST,
