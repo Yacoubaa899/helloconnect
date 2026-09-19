@@ -12,17 +12,30 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('API HelloConnect opérationnelle !');
 });
-// Route pour enregistrer un utilisateur
+// Route pour l'inscription
 app.post('/register', (req, res) => {
-    const { nom, email, motdepasse } = req.body;
+    // 1. On récupère les données envoyées par React
+    // React envoie 'password', mais on gère aussi les autres variantes par sécurité
+    const { nom, email, password, motdepasse, mot_de_passe } = req.body;
+    const userPassword = password || motdepasse || mot_de_passe;
 
-    const sql = "INSERT INTO utilisateurs (nom, email, motdepasse) VALUES (?, ?, ?)";
-    db.query(sql, [nom, email, motdepasse], (err, result) => {
+    // 2. Requête SQL
+    // Si la colonne dans ta table Aiven s'appelle 'mot_de_passe' :
+    const sql = "INSERT INTO utilisateurs (nom, email, mot_de_passe) VALUES (?, ?, ?)";
+
+    // Note : Si dans MySQL ta colonne s'appelle 'password', remplace la ligne ci-dessus par :
+    // const sql = "INSERT INTO utilisateurs (nom, email, password) VALUES (?, ?, ?)";
+
+    db.query(sql, [nom, email, userPassword], (err, result) => {
         if (err) {
-            console.error("Erreur lors de l'insertion :", err);
+            console.error("Erreur SQL lors de l'insertion :", err);
             return res.status(500).json({ error: "Erreur lors de l'inscription" });
         }
-        res.status(200).json({ message: "Utilisateur inscrit avec succès !" });
+
+        res.status(200).json({
+            message: "Utilisateur inscrit avec succès !",
+            user: { nom, email }
+        });
     });
 });
 
