@@ -12,6 +12,19 @@ app.use(express.json());
 app.get('/', (req, res) => {
     res.send('API HelloConnect opérationnelle !');
 });
+// Route pour enregistrer un utilisateur
+app.post('/register', (req, res) => {
+    const { nom, email, motdepasse } = req.body;
+
+    const sql = "INSERT INTO utilisateurs (nom, email, motdepasse) VALUES (?, ?, ?)";
+    db.query(sql, [nom, email, motdepasse], (err, result) => {
+        if (err) {
+            console.error("Erreur lors de l'insertion :", err);
+            return res.status(500).json({ error: "Erreur lors de l'inscription" });
+        }
+        res.status(200).json({ message: "Utilisateur inscrit avec succès !" });
+    });
+});
 
 // Connexion MySQL Aiven via variables d'environnement
 const db = mysql.createConnection({
