@@ -114,7 +114,18 @@ db.connect((err) => {
         }
     });
 });
-
+// Route de test pour voir les utilisateurs enregistrés directement depuis Aiven
+app.get('/test-users', (req, res) => {
+    const sql = "SELECT id, nom, email FROM utilisateurs";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Erreur SQL lors de la récupération :", err);
+            return res.status(500).json({ error: "Impossible de lire la base de données" });
+        }
+        // Renvoie la liste complète des utilisateurs sous forme JSON
+        res.status(200).json(results);
+    });
+});
 // DÉMARRAGE IMMÉDIAT DU SERVEUR (Indépendant de la DB)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, '0.0.0.0', () => {
