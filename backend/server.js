@@ -27,14 +27,14 @@ app.get('/', (req, res) => {
 });
 
 // Route de test pour consulter les utilisateurs enregistrés
-app.get('/test-users', (req, res) => {
-    db.query("SELECT id, nom, email, mot_de_passe FROM utilisateurs", (err, results) => {
-        if (err) {
-            return res.status(500).json({ error: "Impossible de lire la base de données" });
-        }
-        res.json(results);
-    });
-});
+//app.get('/test-users', (req, res) => {
+//  db.query("SELECT id, nom, email, mot_de_passe FROM utilisateurs", (err, results) => {
+//     if (err) {
+//         return res.status(500).json({ error: "Impossible de lire la base de données" });
+//     }
+//     res.json(results);
+//  });
+//});
 
 // Route d'inscription sécurisée (POST /register)
 app.post('/register', async (req, res) => {
